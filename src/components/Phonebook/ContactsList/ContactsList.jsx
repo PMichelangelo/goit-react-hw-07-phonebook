@@ -1,19 +1,27 @@
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
+import { fetchContacts } from '../../../redux/contacts/contacts-operations';
 import { deleteContact } from '../../../redux/contacts/contacts-slice';
-import { getFilteredContacts } from '../../../redux/contacts/contact-selectors';
+import { selectFilteredContacts, selectContacts } from '../../../redux/contacts/contact-selectors';
 
 import styles from './contactsList.module.css';
 
+
 const ContactsList = () => {
-  const contacts = useSelector(getFilteredContacts);
+  const items = useSelector(selectFilteredContacts);
+  const { isLoading, error } = useSelector(selectContacts);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchContacts())
+  },[dispatch])
 
   const handleDeleteContact = id => {
     dispatch(deleteContact(id));
   };
 
-  const elements = contacts.map(({ id, name, phone }) => (
+  const elements = items.map(({ id, name, phone }) => (
     <li key={id} className={styles.listItem}>
       {name}: {phone}{' '}
       <button
@@ -25,7 +33,13 @@ const ContactsList = () => {
       </button>
     </li>
   ));
-  return <ul className={styles.contactsList}>{elements}</ul>;
+  return (
+    <ul className={styles.contactsList}>
+      {isLoading && <p>...Loading</p>}
+      {error && <p>{error}</p>}
+      {elements}
+    </ul>
+  );
 };
 
 export default ContactsList;

@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { nanoid } from 'nanoid';
+import { fetchContacts } from '../../../redux/contacts/contacts-operations';
 
-import { getFilteredContacts } from '../../../redux/contacts/contact-selectors';
+import { selectFilteredContacts } from '../../../redux/contacts/contact-selectors';
 import { addContact } from '../../../redux/contacts/contacts-slice';
 import styles from './phonebookForm.module.css';
 
@@ -15,22 +16,26 @@ const INITIAL_STATE = {
 
 const PhonebookForm = () => {
   const [state, setState] = useState({ ...INITIAL_STATE })
-  const contacts = useSelector(getFilteredContacts)
+  const contacts = useSelector(selectFilteredContacts)
 
   const dispatch = useDispatch();
 
-      const isDublicate = ({ name, phone }) => {
-        const normalizedName = name.toLowerCase();
-        const normalizedNumber = phone.trim();
+  useEffect(() => {
+    dispatch(fetchContacts())
+  }, [])
 
-        const dublicate = contacts.find(item => {
-            const normalizeCurrentName = item.name.toLowerCase();
-            const normalizeCurrentNumber = item.phone.trim();
-            return (normalizeCurrentName === normalizedName || normalizeCurrentNumber === normalizedNumber)
-        })
+  const isDublicate = ({ name, phone }) => {
+    const normalizedName = name.toLowerCase();
+    const normalizedNumber = phone.trim();
 
-        return Boolean(dublicate);
-      };
+    const dublicate = contacts.find(item => {
+        const normalizeCurrentName = item.name.toLowerCase();
+        const normalizeCurrentNumber = item.phone.trim();
+        return (normalizeCurrentName === normalizedName || normalizeCurrentNumber === normalizedNumber)
+    })
+
+    return Boolean(dublicate);
+  };
 
   const onAddContact = (data) => {
     if (isDublicate(data)) {
