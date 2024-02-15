@@ -1,10 +1,8 @@
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
-import { fetchContacts } from '../../../redux/contacts/contacts-operations';
+import { addContact } from '../../../redux/contacts/contacts-operations';
 
-import { selectFilteredContacts } from '../../../redux/contacts/contact-selectors';
-import { addContact } from '../../../redux/contacts/contacts-slice';
 import styles from './phonebookForm.module.css';
 
 const INITIAL_STATE = {
@@ -16,10 +14,9 @@ const INITIAL_STATE = {
 
 const PhonebookForm = () => {
   const [state, setState] = useState({ ...INITIAL_STATE })
-  const contacts = useSelector(selectFilteredContacts)
 
   const dispatch = useDispatch();
-
+/*
   useEffect(() => {
     dispatch(fetchContacts())
   }, [])
@@ -36,13 +33,8 @@ const PhonebookForm = () => {
 
     return Boolean(dublicate);
   };
-
+*/
   const onAddContact = (data) => {
-    if (isDublicate(data)) {
-      alert(`${data.name} with number ${data.phone} is already in phonebook`)
-      return
-    }
-
     const action = addContact(data)
     dispatch(action)
   }
@@ -58,9 +50,7 @@ const PhonebookForm = () => {
  const handleSubmit = e => {
     e.preventDefault();
    onAddContact({ ...state })
-   if (!isDublicate({...state})) {
      reset()
-   }
  };
 
   const reset = () => {
